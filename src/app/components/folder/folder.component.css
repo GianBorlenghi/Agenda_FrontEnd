@@ -1,0 +1,43 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", sans-serif;
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#a9db80+0,96c56f+100;Green+3D+%232 */
+    background: rgb(169, 219, 128);
+    /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgba(169, 219, 128, 1) 0%, rgba(150, 197, 111, 1) 100%);
+    /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, rgba(169, 219, 128, 1) 0%, rgba(150, 197, 111, 1) 100%);
+    /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, rgba(169, 219, 128, 1) 0%, rgba(150, 197, 111, 1) 100%);
+    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a9db80', endColorstr='#96c56f', GradientType=1);
+    /* IE6-9 fallback on horizontal gradient */
+    height: 100vh;
+  }
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);    
+
+
+
+#scroll{
+    overflow-y:scroll;
+    overflow-x:hidden;
+  }
+
+.table-div{
+    width:70%;
+    height:auto;
+    margin:2% auto;
+    
+}
+
+#paragraph{
+    font-size: 15px;
+  
+}
+#alert{
+    color:#a22;
+    font-size:15px;
+    margin-bottom:10px;
+   
+  }

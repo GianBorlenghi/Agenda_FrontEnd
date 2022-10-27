@@ -1,0 +1,546 @@
+<html meta="viewport">
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+  integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+
+<body id="scroll">
+
+  <i class="fa fa-sharp fa-solid fa-marker"></i>
+
+  <div class="nav">
+    <nav class="navbar fixed-top" style="background-color:#bbb;">
+      <div class="container-fluid">
+        <button class="navbar-toggler bt" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+          aria-controls="offcanvasNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <button class="btn btn-success" style="font-size:15px; border-radius: 3px 12px 12px;" (click)="logout()">Logout</button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Actions</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3" style="cursor:pointer;">
+              <li class="nav-item">
+                <a class="nav-link " aria-current="page" data-bs-toggle="modal" style="cursor:pointer;"
+                  data-bs-target="#addTaskModal">Create Task</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link " style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#addFolderModal">Add
+                  Folder</a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#showTasks">All
+                  Task</a>
+              </li>
+
+              <li *ngIf="role!=null && role.includes('ADMIN')" class="nav-item">
+                <a class="nav-link" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#userOnlineModal">View all user On-Line</a>
+              </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <i class="fa fa-light fa-user">
+                    <p>{{user.username}}</p>
+                  </i>
+                </a>
+                <ul class="dropdown-menu">
+
+                  <li><a class="dropdown-item" style="cursor:pointer;" data-bs-toggle="modal"
+                      data-bs-target="#changePasswordModal">Change password</a></li>
+
+
+                </ul>
+
+              </li>
+
+            </ul>
+
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+  <div class="container">
+<div *ngIf="folder.length === 0">
+
+    <h3 data-bs-toggle="modal" data-bs-target="#addFolderModal" style="padding:20px;text-align:center;color:#934">You do not have any folders
+      or tasks created yet. Please <ins><a style="cursor:pointer">Tap here</a></ins> to start.</h3>
+
+    </div>
+    <div *ngIf="folder.length !== 0">
+      <div class="folder-container" *ngFor="let fol of folder;let i = index">
+        <a href="/folder/{{fol.folder_name}}/{{fol.id_folder}}" target="_blank"><i class="fa fa-dark fa-folder-open"
+            style="font-size:100px;color:#777;text-align: center;"></i></a>
+        <h5>{{fol.folder_name}}</h5>
+        <i class="fa fa-regular fa-trash" id="trash" (click)="deleteFolderClick(fol.id_folder)"></i>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast notifications.-->
+
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <img src="./assets/images/notification.png" class="rounded me-2" alt="notification" style="width:5%;">
+        <strong class="me-auto text-danger">Notifications</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <b>This tasks:</b>
+        <div>
+          <ul>
+            <li *ngFor="let task of task_do">
+              <i>{{task.task_name}}</i>
+            </li>
+          </ul>
+
+        </div>
+        <p class="text-danger"><b>They are close to their completion date</b></p>
+      </div>
+    </div>
+
+
+    <div id="notificationsTaskFinished" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <img src="./assets/images/notification.png" class="rounded me-2" alt="notification" style="width:5%;">
+        <strong class="me-auto text-danger">Notifications</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <b>This task(s):</b>
+        <div>
+          <ul>
+            <li *ngFor="let task of task_finish">
+              <i>{{task.task_name}}</i>
+            </li>
+          </ul>
+
+        </div>
+        <p class="text-danger"><b>The date of the previous tasks were left behind.
+
+          </b></p>
+      </div>
+    </div>
+
+
+  </div>
+
+
+</body>
+<!-- MODAL CREATE TASK-->
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+
+      <div class="modal-header" style="background-color:#3aa;">
+
+        <h5 class="modal-title" id="addTaskModalLabel">Add Task</h5>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      </div>
+
+      <div class="modal-body" *ngIf="folder.length == 0">
+        Please, create a folder to add some task.
+        <a class="nav-link " style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#addFolderModal"> <i
+            class="fa fa-solid fa-arrow-right"></i>Add
+          Folder</a>
+      </div>
+
+      <!-- FORM CREATE TASK-->
+      <form [formGroup]="addTaskForm" (ngSubmit)="addTaskSubmit()">
+
+        <div *ngIf="folder.length!== 0" class="modal-body" style="background-color:#bbb">
+
+          <div class="input-group flex-nowrap">
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" formControlName="taskName" placeholder="Name"
+                aria-label="taskName" aria-describedby="addon-wrapping">
+              <label for="taskName" style="color:#38a;">Task name</label>
+            </div>
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('taskName')?.errors?.['required']">
+            *Task name is required
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('taskName')?.errors?.['pattern']">
+            *Invalid chars detected
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('taskName')?.errors?.['minlength']">
+            *Task name field must have at least 3 chars.
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('taskName')?.errors?.['maxlength']">
+            *Task field allows up to 20 chars
+          </div>
+
+          <div class="input-group flex-nowrap">
+
+            <div class="form-floating mb-3">
+              <input type="datetime-local" class="form-control" formControlName="task_date" placeholder="Finish Date"
+                aria-label="finishDate" aria-describedby="addon-wrapping" (change)="validateTaskDate($event)">
+              <label for="finishDate" style="color:#38a;">Finish Date</label>
+            </div>
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('task_date')?.errors?.['required']">
+            *Task finish date is required
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="!dateValid">
+            *Invalid date: You can put dates up to 2 years after the current one
+          </div>
+
+          <select class="form-select form-select-sm" aria-label=".form-select-sm example" formControlName="folder"
+            style="padding:15px;">
+
+            <option selected value="-">Open this select menu</option>
+            <option *ngFor="let fold of folder" style="color:#38a;" [ngValue]="fold">{{fold.folder_name}} </option>
+
+          </select>
+          <div class="text-center" id="alert" style="margin-top:10px;"
+            *ngIf="addTaskForm.get('folder')?.errors?.['required']">
+            *Folder is required
+          </div>
+          <div>
+            <p id="message-Task" style="visibility:hidden;">Task Created!<i class="fa fa-solid fa-check"
+                style="color:#3a2;"></i></p>
+          </div>
+
+
+        </div>
+
+        <div class="modal-footer" id="modal-footer-createTask" style="background-color:#bbb">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="submit" [disabled]="!addTaskForm.valid" id="btn-submit-createTask" class="btn btn-primary"
+            value="Create">
+        </div>
+
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+<!-- MODAL CREATE FOLDER-->
+<div class="modal fade" id="addFolderModal" tabindex="-1" aria-labelledby="addFolderModalLabel" aria-hidden="true">
+
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+
+      <div class="modal-header" style="background-color:#3aa;">
+
+        <h5 class="modal-title" id="addFolderModalLabel">Create folder</h5>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      </div>
+
+      <!-- FORM CREATE FOLDER-->
+      <form [formGroup]="createFolderForm" (ngSubmit)="addFolderSubmit()">
+
+        <div class="modal-body" style="background-color:#bbb">
+
+          <div class="input-group flex-nowrap">
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" formControlName="folderName" placeholder="Name"
+                aria-label="folderName" aria-describedby="addon-wrapping">
+              <label for="folderName" style="color:#38a;">Folder name</label>
+            </div>
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="createFolderForm.get('folderName')?.errors?.['required']">
+            *Folder name is required
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="createFolderForm.get('folderName')?.errors?.['pattern']">
+            *Invalid chars detected
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="createFolderForm.get('folderName')?.errors?.['minlength']">
+            *Folder name field must have at least 3 chars.
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="createFolderForm.get('taskName')?.errors?.['maxlength']">
+            *Folder field allows up to 20 chars
+          </div>
+
+
+        </div>
+
+        <div class="modal-footer" style="background-color:#bbb">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="submit" [disabled]="!this.createFolderForm.valid" class="btn btn-primary" value="Create">
+        </div>
+
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!--
+    MODAL ALL TASKS
+  -->
+
+<div class="modal fade" id="showTasks" tabindex="-1" aria-labelledby="showTasksLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="showTasksLabel">All task of {{user.username}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+
+          <table class="table">
+            <thead class="table-info">
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Finish date</th>
+                <th scope="col">Added date</th>
+                <th scope="col">Finished</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of task" class="table-light">
+                <td>{{item.task_name}}</td>
+                <td>{{item.task_date.toString().replace('T',' ')}}</td>
+                <td>{{item.task_date_added.toString().replace('T',' ')}}</td>
+                <td>
+                  <div *ngIf="!item.is_finished" class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
+                  </div>
+
+                  <div *ngIf="item.is_finished" class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckCheckedDisabled"
+                      checked disabled>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--
+    MODAL CHANGE PASSWORD
+-->
+
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+  aria-hidden="true">
+
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+
+      <div class="modal-header" style="background-color:#3aa;">
+
+        <h5 class="modal-title" id="changePasswordModalLabel">Change password</h5>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      </div>
+
+      <!-- FORM CHANGE PASSWORD-->
+      <form [formGroup]="changePasswordForm" (ngSubmit)="changePasswordSubmit()">
+
+        <div class="modal-body" style="background-color:#bbb">
+
+          <div class="input-group flex-nowrap">
+
+            <div class="form-floating mb-3">
+              <input type="password" class="form-control" id="actualPassword" formControlName="actualPassword"
+                placeholder="p" aria-label="actualPassword" aria-describedby="addon-wrapping">
+              <label for="actualPassword" style="color:#38a;">Actual password</label>
+            </div>
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="changePasswordForm.get('actualPassword')?.errors?.['required']">
+            *Password is required.
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="changePasswordForm.get('actualPassword')?.errors?.['minlength']">
+            *Password field must have at least 8 chars.
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="changePasswordForm.get('actualPassword')?.errors?.['maxlength']">
+            *Password field must have at least 25 chars.
+          </div>
+
+          <div class="input-group flex-nowrap">
+            <div class="form-floating mb-3">
+              <input type="password" class="form-control" id="newPassword" formControlName="newPassword" placeholder="p"
+                aria-label="newPassword" aria-describedby="addon-wrapping">
+              <label for="newPassword" style="color:#38a;">New password</label>
+            </div>
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="changePasswordForm.get('newPassword')?.errors?.['required']">
+            *Password is required.
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="changePasswordForm.get('newPassword')?.errors?.['minlength']">
+            *Password field must have at least 8 chars.
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="changePasswordForm.get('newPassword')?.errors?.['maxlength']">
+            *Password field must have at least 25 chars.
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="changePasswordForm.get('newPassword')?.errors?.['pattern']">
+            *Password field need a upper case, a lower case and a special char.
+          </div>
+
+          <div class="input-group flex-nowrap">
+            <div class="form-floating mb-3">
+              <input type="password" class="form-control" id="newPasswordRepeat" formControlName="newPasswordRepeat"
+                placeholder="p" aria-label="newPasswordRepeat" aria-describedby="addon-wrapping">
+              <label for="newPasswordRepeat" style="color:#38a;">Repeat new password</label>
+            </div>
+          </div>
+
+
+          <div class="text-center" id="alert" *ngIf="changePasswordForm.get('newPasswordRepeat')?.errors?.['required']">
+            *Password is required.
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="!passwordCoincide">
+            *Passwords do not match.
+          </div>
+
+        </div>
+
+        <div class="modal-footer" id="modal-footer-changePassword" style="background-color:#bbb">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="submit" id="btn-submit-changePassword" class="btn btn-primary" value="Change">
+        </div>
+
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Error modal-->
+<div class="modal fade" id="modal-message" tabindex="-1" aria-labelledby="modal-messageLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header  bg-danger">
+        <h1 class="modal-title fs-5" id="modal-messageLabel">{{modalTitle}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{modalBody}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal confirm-->
+<div class="modal fade" id="modal-confirmDelete" tabindex="-1" aria-labelledby="modal-confirmDeleteLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header  bg-danger">
+        <h1 class="modal-title fs-5" id="modal-confirmDeleteLabel">{{modalTitle}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{modalBody}}
+      </div>
+      <div class="modal-footer">
+        <p id="message-confirmDelete" style="visibility:hidden;">Folder removed<i class="fa fa-solid fa-check"
+            style="color:#3a2;"></i></p>
+        <button class="btn btn-primary" id="btn-delete" (click)="deleteFolder()">Yes</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- The Modal -->
+<div class="modal" id="userOnlineModal" tabindex="-1" aria-labelledby="userOnlineModalLabel"
+aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+
+      <div class="modal-header">
+        <h4 class="modal-title">Users On-Line</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+
+      <div class="modal-body">
+
+        <table class="table">
+
+          <tr *ngFor="let user of userOnline">
+            <th scope="row">
+              <input class="form-check-input bg-success" type="checkbox" role="switch"
+                id="flexSwitchCheckCheckedDisabled" checked disabled>
+            </th>
+            <td>{{user}}</td>
+          </tr>
+        </table>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+</html>

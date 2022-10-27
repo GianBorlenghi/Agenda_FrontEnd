@@ -1,0 +1,278 @@
+<html meta="viewport">
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+  integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+<body id="scroll">
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid text-center" id="div-p">
+      <p class="text-light text-center text-uppercase" id="paragraph">Now you see all task of folder '{{folderName}}'
+      </p>
+    </div>
+  </nav>
+
+  <div *ngIf="t.length === 0" class="text-center primary" style="color:#a21;font-size:30px;margin-top:20%;">
+    <a class="nav-link " aria-current="page" data-bs-toggle="modal" style="cursor:pointer;"
+    data-bs-target="#addTaskModal"><i class="fa fa-solid fa-plus" style="color:#38a"></i></a><br>
+    This folder
+    has no pending tasks yet
+
+  </div>
+
+  <div *ngIf="t.length !== 0" class="table-responsive table-div">
+    <table class="table table-success table-striped table-responsive">
+      <thead class="table-secondary">
+        <tr>
+          <th scope="col">Task name</th>
+          <th scope="col">Task added date</th>
+          <th scope="col">Task finish date</th>
+          <th scope="col">Actions</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of t;let i = index" id="tr">
+          <td>{{f.task_name}}</td>
+          <td>{{f.task_date_added.toString().replace('T',' ')}}</td>
+          <td>{{f.task_date.toString().replace('T',' ')}}</td>
+          <td>
+
+            <button type="button" class="btn btn-success" style="margin-left:10px;" id="btn-finish"
+              (click)="btnClick(f.id_task)">Finish it</button>
+
+            <button class="btn btn-danger" style="margin-left:10px;"><i class="fa fa-sharp fa-solid fa-trash"
+                id="delete" (click)="deleteClick(f.id_task,f.task_name)"></i></button>
+            
+              <button type="button" class="btn btn-primary" style="margin-left:10px;" id="btn-edit"
+              (click)="btnEditClick(i)">Edit</button>
+          </td>
+        </tr>
+
+
+      </tbody>
+    </table>
+  </div>
+</body>
+
+
+
+
+<div class="modal fade" id="modal-message" tabindex="-1" aria-labelledby="modal-messageLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header  bg-danger">
+        <h1 class="modal-title fs-5" id="modal-messageLabel">{{modalTitle}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{modalBody}}
+      </div>
+      <div class="modal-footer">
+        <button type="button"id="btn2" class="btn btn-primary" data-bs-dismiss="modal" (click)="finishTask()">
+          Yes</button>
+        <button type="button" id="btn1" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modal-deleteConfirm" tabindex="-1" aria-labelledby="modal-deleteConfirmLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header  bg-danger">
+        <h1 class="modal-title fs-5" id="modal-deleteConfirmLabel">{{modalTitle}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{modalBody}}
+      </div>
+      <div class="modal-footer">
+        <p id="message" style="visibility:hidden;">Task Deleted!<i class="fa fa-solid fa-check" style="color:#3a2;"></i>
+        </p>
+        <button type="button" class="btn btn-primary" id="btn-delete" (click)="deleteTask()">
+          Yes</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <h1 class="modal-title fs-5" id="editTaskModalLabel">Edit task</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+<!-- Edita Form Task.-->
+<form [formGroup]="editTaskForm" (ngSubmit)="editTaskFormSubmit()">
+
+  <div class="input-group flex-nowrap">
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" formControlName="taskName" placeholder="Name" aria-label="taskName"
+        aria-describedby="addon-wrapping">
+      <label for="taskName" style="color:#38a;">Task name</label>
+    </div>
+  </div>
+
+  <div class="text-center" id="alert" *ngIf="editTaskForm.get('taskName')?.errors?.['required']">
+    *Task name is required
+  </div>
+
+  <div class="text-center" id="alert" *ngIf="editTaskForm.get('taskName')?.errors?.['pattern']">
+    *Invalid chars detected
+  </div>
+
+  <div class="text-center" id="alert" *ngIf="editTaskForm.get('taskName')?.errors?.['minlength']">
+    *Task name field must have at least 3 chars.
+  </div>
+
+  <div class="text-center" id="alert" *ngIf="editTaskForm.get('taskName')?.errors?.['maxlength']">
+    *Task field allows up to 20 chars
+  </div>
+
+  <div class="input-group flex-nowrap">
+
+    <div class="form-floating mb-3">
+      <input type="datetime-local" class="form-control" formControlName="task_date" placeholder="Finish Date"
+        aria-label="finishDate" aria-describedby="addon-wrapping" (change)="validateTaskDate($event)">
+      <label for="finishDate" style="color:#38a;">Finish Date</label>
+    </div>
+  </div>
+
+  <div class="text-center" id="alert" *ngIf="editTaskForm.get('task_date')?.errors?.['required']">
+    *Task finish date is required
+  </div>
+
+  <div class="text-center" id="alert" *ngIf="!dateValid">
+    *Invalid date: You can put dates up to 2 years after the current one
+  </div>
+
+  <input type="submit" class="btn btn-primary" id="btn-edit" value="Save Changes">
+  <span class="spinner-grow spinner-grow-sm text-success" *ngIf="isLoad" role="status"
+  aria-hidden="true" style="visibility:hidden"></span>
+  <p id="msg" style="visibility:hidden">
+  
+  </p>
+</form>
+
+      
+      </div>
+      <div class="modal-footer">
+
+
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+
+      <div class="modal-header" style="background-color:#3aa;">
+
+        <h5 class="modal-title" id="addTaskModalLabel">Add Task</h5>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+      </div>
+
+      
+      
+      
+
+      <!-- FORM CREATE TASK-->
+      <form [formGroup]="addTaskForm" (ngSubmit)="addTaskSubmit()">
+
+        <div class="modal-body" style="background-color:#bbb">
+
+          <div class="input-group flex-nowrap">
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" formControlName="taskName" placeholder="Name"
+                aria-label="taskName" aria-describedby="addon-wrapping">
+              <label for="taskName" style="color:#38a;">Task name</label>
+            </div>
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('taskName')?.errors?.['required']">
+            *Task name is required
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('taskName')?.errors?.['pattern']">
+            *Invalid chars detected
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('taskName')?.errors?.['minlength']">
+            *Task name field must have at least 3 chars.
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('taskName')?.errors?.['maxlength']">
+            *Task field allows up to 20 chars
+          </div>
+
+          <div class="input-group flex-nowrap">
+
+            <div class="form-floating mb-3">
+              <input type="datetime-local" class="form-control" formControlName="task_date" placeholder="Finish Date"
+                aria-label="finishDate" aria-describedby="addon-wrapping" (change)="validateTaskDate($event)">
+              <label for="finishDate" style="color:#38a;">Finish Date</label>
+            </div>
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="addTaskForm.get('task_date')?.errors?.['required']">
+            *Task finish date is required
+          </div>
+
+          <div class="text-center" id="alert" *ngIf="!dateValid">
+            *Invalid date: You can put dates up to 2 years after the current one
+          </div>
+
+          <div>
+            <p id="message-Task" style="visibility:hidden;">Task Created!<i class="fa fa-solid fa-check"
+                style="color:#3a2;"></i></p>
+          </div>
+
+
+        </div>
+
+        <div class="modal-footer" id="modal-footer-createTask" style="background-color:#bbb">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="submit" [disabled]="!addTaskForm.valid" id="btn-submit-createTask" class="btn btn-primary"
+            value="Create">
+        </div>
+
+
+      </form>
+
+    </div>
+    
+  </div>
+
+</div>
+
+
+
+
+
+</html>

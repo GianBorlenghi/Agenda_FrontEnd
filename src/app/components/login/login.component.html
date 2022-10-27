@@ -1,0 +1,204 @@
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+<body>
+
+    <!--
+    FORM REGISTER
+-->
+
+    <div class="login-page">
+
+        <div class="form" id="scroll">
+            <form class="register-form" [formGroup]="registerForm" (ngSubmit)="submitRegister()">
+                <p class="message" id="m1">Already registered? <a id="a1" style="cursor:pointer;">Sign In</a></p>
+
+                <input type="text" placeholder="Name" formControlName="name" id="input-name"/>
+
+                <div class="alert" *ngIf="registerForm.get('name')?.errors?.['required']">
+                    *Name field is required.
+                </div>
+
+                <div class="alert" *ngIf="registerForm.get('name')?.errors?.['maxlength']">
+                    *Name field allows up to 25 chars
+                </div>
+
+                <div class="alert" *ngIf="registerForm.get('name')?.errors?.['minlength']">
+                    *Name field must have at least 3 chars.
+                </div>
+
+                <div class="alert" *ngIf="registerForm.get('name')?.errors?.['pattern']">
+                    *Name field allows only letters.
+                </div>
+
+                <input type="text" placeholder="Surname" formControlName="surname" id="input-surname"/>
+
+                <div class="alert" *ngIf="registerForm.get('surname')?.errors?.['required']">
+                    *Name field is required.
+                </div>
+
+                <div class="alert" *ngIf="registerForm.get('surname')?.errors?.['maxlength']">
+                    *Surname field allows up to 35 chars
+                </div>
+
+                <div class="alert" *ngIf="registerForm.get('surname')?.errors?.['minlength']">
+                    *Name field must have at least 3 chars.
+                </div>
+
+                <div class="alert" *ngIf="registerForm.get('surname')?.errors?.['pattern']">
+                    *Name field allows only letters.
+                </div>
+
+                <input type="date" placeholder="" formControlName="dateOfBirth" id="date_of_birth"
+                    (change)="validateBirth()" />
+
+                <div class="alert" *ngIf="!ageValid">
+                    *Only people with more than 18 years can register.
+                </div>
+
+                <div class="alert" *ngIf="registerForm.get('dateOfBirth')?.errors?.['required']">
+                    *Date of birth is required.
+                </div>
+
+                <select name="" id="select_province" formControlName="province"
+                    (change)="getNameOfProvince($any($event.target).value)" id="input-province">
+
+                    <option value="-" selected="true">PROVINCE</option>
+                    <option *ngFor="let province of provinces" value="{{province.nombre}}">{{province.nombre}}</option>
+
+                </select>
+
+                <div class="alert" *ngIf="registerForm.get('province')?.errors?.['required']">
+                    *Province is required.
+                </div>
+
+                <div class="alert" id="alert-city" *ngIf="selectedProvince == '-'">
+                    *Province is required.
+                </div>
+
+                <select name="" id="select_cities" hidden="true" formControlName="city"
+                    (change)="getCity($any($event.target).value)" id="input-city">
+
+                    <option value="-" selected="true">CITY</option>
+                    <option *ngFor="let city of cities" value="{{city.nombre}}">{{city.nombre}}</option>
+
+                </select>
+
+                <div class="alert" id="alert-city" *ngIf="selectedCity == '-'">
+                    *City is required.
+                </div>
+
+                <div class="alert" hidden="true" id="alert-city" *ngIf="registerForm.get('city')?.errors?.['required']">
+                    *City is required.
+                </div>
+
+                <input type="email" placeholder="E-mail address" formControlName="email" id="input-mail"/>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('email')?.errors?.['required']">
+                    *E-mail is required.
+                </div>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('email')?.errors?.['email']">
+                    *Does not match an email.
+                </div>
+
+                <input type="text" placeholder="Username" formControlName="username" id="input-username"/>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('username')?.errors?.['required']">
+                    *Username is required.
+                </div>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('username')?.errors?.['pattern']">
+                    *Username field allows only letters and numbers.
+                </div>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('username')?.errors?.['minlength']">
+                    *Username field must have at least 5 chars.
+                </div>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('username')?.errors?.['maxlength']">
+                    *Username field allows up to 16 chars
+                </div>
+
+                <input type="password" placeholder="Password" formControlName="password" id="input-password"/>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('password')?.errors?.['required']">
+                    *Password is required.
+                </div>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('password')?.errors?.['minlength']">
+                    *Password field must have at least 8 chars.
+                </div>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('password')?.errors?.['maxlength']">
+                    *Password field must have at least 25 chars.
+                </div>
+
+                <div class="alert" id="alert-city" *ngIf="registerForm.get('password')?.errors?.['pattern']">
+                    *Password field need a upper case, a lower case and a special char.
+                </div>
+
+                <span class="spinner-grow spinner-grow-sm text-success" *ngIf="isLoadReg" role="status"
+                    aria-hidden="true"></span>
+                <input class="button" id="btn-register" type="submit" value="Create">
+
+
+            </form>
+
+            <!--
+    FORM LOGIN
+-->
+
+            <form class="login-form" [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+
+                <input type="text" formControlName="username" placeholder="Username" />
+
+                <div class="alert" *ngIf="loginForm.get('username')?.errors?.['required']">
+                    *Username is required
+                </div>
+
+                <div class="alert" *ngIf="loginForm.get('username')?.errors?.['minlength']">
+                    *Username is too short
+                </div>
+
+                <div class="alert" *ngIf="loginForm.get('username')?.errors?.['pattern']">
+                    *Username invalid
+                </div>
+
+                <div class="alert" *ngIf="loginForm.get('username')?.errors?.['maxlength']">
+                    *Username is too large
+                </div>
+
+                <input type="password" formControlName="password" placeholder="Password" />
+
+                <div class="alert" *ngIf="loginForm.get('password')?.errors?.['required']">
+                    *Password is required
+                </div>
+
+                <div class="alert" *ngIf="loginForm.get('password')?.errors?.['minlength']">
+                    *Password is too short
+                </div>
+
+                <div class="alert" *ngIf="loginForm.get('password')?.errors?.['maxlength']">
+                    *Password is too large
+                </div>
+
+                <span class="spinner-grow spinner-grow-sm text-success" *ngIf="isLoad" role="status"
+                    aria-hidden="true"></span>
+                <input class="button" id="btn-login" [disabled]="loginForm.invalid" type="submit" value="login!">
+                <p class="message">Not registered? <a id="a2" style="cursor:pointer" >Create an account</a></p>
+
+                <p class="message">Forgot password? <a id="a3" [routerLink]="['#']" (click)="openResetModal()">Reset</a></p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Modal -->
+
+
+
+
+</body>

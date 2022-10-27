@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "public": "dist\\agenda-front_end",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
