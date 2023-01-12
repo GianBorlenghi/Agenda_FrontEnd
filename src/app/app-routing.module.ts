@@ -3,9 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { FolderComponent } from './components/folder/folder.component';
 import { LoginComponent } from './components/login/login.component';
 import { MasterComponent } from './components/master/master.component';
-import { ModalComponent } from './components/modal/modal.component';
 import { LoginGuard } from './guard/login.guard';
-import { NoLoginGuard } from './guard/no-login.guard';
 
 const routes: Routes = [
   

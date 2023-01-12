@@ -9,7 +9,7 @@ import { Login } from '../models/Login';
 })
 export class AuthServiceService {
 
-  private url = /*"http://localhost:8080/"*/"https://spring-agenda-backend.herokuapp.com/"
+  private url = "http://localhost:8080/"/*"https://spring-agenda-backend.herokuapp.com/"*/
   isLogued:boolean;
   constructor(private http:HttpClient) {
 

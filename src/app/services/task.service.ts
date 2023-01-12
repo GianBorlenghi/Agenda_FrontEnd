@@ -5,8 +5,8 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class TaskService {
- //private url = "http://localhost:8080/api/"
- private url = /*"http://localhost:8080/"*/"https://spring-agenda-backend.herokuapp.com/api/" 
+ private url = "http://localhost:8080/api/"
+ //private url = /*"http://localhost:8080/"*/"https://spring-agenda-backend.herokuapp.com/api/" 
  constructor(private http:HttpClient) { }
 
 

@@ -3,9 +3,9 @@
   integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
 <body id="scroll">
-  <nav class="navbar navbar-dark bg-dark">
+  <nav class="navbar navbar-dark" style="background:#D8CE8D;border-bottom:1px solid #fff;">
     <div class="container-fluid text-center" id="div-p">
-      <p class="text-light text-center text-uppercase" id="paragraph">Now you see all task of folder '{{folderName}}'
+      <p class="text-center" id="paragraph">Now you see all task of folder '{{folderName}}'
       </p>
     </div>
   </nav>
@@ -19,6 +19,8 @@
   </div>
 
   <div *ngIf="t.length !== 0" class="table-responsive table-div">
+    <a class="nav-link " aria-current="page" data-bs-toggle="modal" style="cursor:pointer;"
+    data-bs-target="#addTaskModal"><i class="fa fa-solid fa-plus" style="color:#38a"></i></a>
     <table class="table table-success table-striped table-responsive">
       <thead class="table-secondary">
         <tr>
@@ -161,12 +163,12 @@
     *Invalid date: You can put dates up to 2 years after the current one
   </div>
 
-  <input type="submit" class="btn btn-primary" id="btn-edit" value="Save Changes">
   <span class="spinner-grow spinner-grow-sm text-success" *ngIf="isLoad" role="status"
-  aria-hidden="true" style="visibility:hidden"></span>
-  <p id="msg" style="visibility:hidden">
-  
+  aria-hidden="true"></span>
+  <p id="msg" style="visibility:hidden;color:#3a2;">
   </p>
+  <input type="submit" class="btn btn-primary" id="btn-edit" value="Save Changes">
+
 </form>
 
       

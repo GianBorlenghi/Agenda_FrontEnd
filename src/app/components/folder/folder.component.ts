@@ -23,8 +23,11 @@ export class FolderComponent implements OnInit {
   $: any;
   id_folder:any = this.activatedRoute.snapshot.params['id_folder'];
   folderName = this.activatedRoute.snapshot.params['folder_name'];
+  folders:Folder[] = [];
   addTaskForm:FormGroup;
-  folder: any
+  folder: any;
+  existe:boolean = false;
+  task_not_finish: Task[] =[];
   task: Task[] = [];
   t: Task[] = [];
   tasks:Task[] = [];
@@ -57,13 +60,25 @@ export class FolderComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.folders = JSON.parse(localStorage.getItem('folders') || '')
+    let idFolders = [];
+    idFolders = this.folders.map(x=>x.id_folder);
+    
+
+    idFolders.forEach(x=>{if( x == this.id_folder){this.existe = true;}})
+
+if(this.existe){    
+
     this.user = JSON.parse(localStorage.getItem('user') || '')
     this.folderService.getTaskXFolder(this.id_folder).subscribe(
       (data:any)=>{
         
         this.task = data;
-        localStorage.setItem('task',JSON.stringify(this.task));
+
+        
         this.t = this.task.filter((x: any) => x.is_finished === false)
+        localStorage.setItem('task',JSON.stringify(this.t));
+
         
       },(error:any)=>{
         if(error.status == 500){
@@ -82,8 +97,10 @@ export class FolderComponent implements OnInit {
         }
       }
       )
-
- 
+   
+    }else{
+      this.route.navigate(['home']);
+    }
   }
 
   btnClick(i: any) {
@@ -147,19 +164,21 @@ export class FolderComponent implements OnInit {
   
   btnEditClick(i:any){
 
-    this.tasks = JSON.parse(localStorage.getItem('task') || '');
+    this.task = JSON.parse(localStorage.getItem('task') || '')
+    
 
-    this.editTaskForm.controls['taskName'].setValue(this.tasks[i].task_name);
-    this.editTaskForm.controls['task_date'].setValue(this.tasks[i].task_date);
-    this.editTaskForm.controls['id_task'].setValue(this.tasks[i].id_task);
+    this.editTaskForm.controls['taskName'].setValue(this.t[i].task_name);
+    this.editTaskForm.controls['task_date'].setValue(this.t[i].task_date);
+    this.editTaskForm.controls['id_task'].setValue(this.t[i].id_task);
     $('#editTaskModal').modal('show');
+    console.log(i);
+
   }
 
   editTaskFormSubmit(){
     if(this.editTaskForm.valid && this.dateValid){
       this.isLoad = true;
       $('#btn-edit').prop('disabled',true);
-
       this.editTask();
     }else{
       alert("Form have some error(s)")
@@ -177,8 +196,9 @@ export class FolderComponent implements OnInit {
     this.taskService.editTask(t,id).subscribe(
       (data:any)=>{
         this.isLoad = false;
+        $('#msg').css('visibility','visible');
         $('#msg').append('Task edited<i class="fa fa-solid fa-check" style="color:#3a2;margin-left:5px;"></i>')
-
+        localStorage.removeItem('folders')
         setTimeout(()=>{
           $('#editTaskModal').modal('hide');
           location.reload();

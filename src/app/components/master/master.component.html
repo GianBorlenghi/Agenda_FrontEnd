@@ -8,13 +8,14 @@
   <i class="fa fa-sharp fa-solid fa-marker"></i>
 
   <div class="nav">
-    <nav class="navbar fixed-top" style="background-color:#bbb;">
+    <nav class="navbar fixed-top" style="background:#D8CE8D;">
       <div class="container-fluid">
-        <button class="navbar-toggler bt" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+        <button class="navbar-toggler bt"  type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
           aria-controls="offcanvasNavbar">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <button class="btn btn-success" style="font-size:15px; border-radius: 3px 12px 12px;" (click)="logout()">Logout</button>
+        <p id="paragraph">Welcome {{user.surname}}, {{user.name}} !</p>
+        <button class="btn btn-success" id="logout" style="font-size:15px; border-radius: 3px 12px 12px;opacity:80%;" (click)="logout()">Logout</button>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
           <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Actions</h5>
@@ -75,12 +76,15 @@
     </div>
     <div *ngIf="folder.length !== 0">
       <div class="folder-container" *ngFor="let fol of folder;let i = index">
-        <a href="/folder/{{fol.folder_name}}/{{fol.id_folder}}" target="_blank"><i class="fa fa-dark fa-folder-open"
+        <a href="/folder/{{fol.folder_name}}/{{fol.id_folder}}" (click)="folderId(fol.id_folder)"target="_blank"><i class="fa fa-dark fa-folder-open"
             style="font-size:100px;color:#777;text-align: center;"></i></a>
         <h5>{{fol.folder_name}}</h5>
         <i class="fa fa-regular fa-trash" id="trash" (click)="deleteFolderClick(fol.id_folder)"></i>
       </div>
+      <a class="nav-link " aria-current="page" data-bs-toggle="modal" style="cursor:pointer;font-size:40px;float:right;margin-top:10%;"
+      data-bs-target="#addFolderModal"><i class="fa fa-solid fa-plus" style="color:rgb(192, 154, 1);"></i></a>
     </div>
+    
   </div>
   
   <!-- Toast notifications.-->
@@ -98,12 +102,15 @@
         <div>
           <ul>
             <li *ngFor="let task of task_do">
-              <i>{{task.task_name}}</i>
+              <i>{{task.task_name}}
+              <b>(Finish at: {{task.task_date.toString().replace('T',' ')}})</b></i>
+          
             </li>
           </ul>
 
         </div>
-        <p class="text-danger"><b>They are close to their completion date</b></p>
+       <!-- <p class="text-danger"><b>They are close to their completion date</b></p>-->
+       <p class="text-danger"><b>Finish in less than 24 hours, please check the hours each one.</b></p>
       </div>
     </div>
 
@@ -132,8 +139,7 @@
 
 
   </div>
-
-
+ 
 </body>
 <!-- MODAL CREATE TASK-->
 <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
@@ -286,12 +292,16 @@
             *Folder field allows up to 20 chars
           </div>
 
+         
 
         </div>
-
-        <div class="modal-footer" style="background-color:#bbb">
+          
+        <div class="modal-footer" id="footer-create_folder" style="background-color:#bbb">
+          <p id="message-folder" style="visibility:hidden;color:#3a2;">Folder Created!<i class="fa fa-solid fa-check"
+            style="color:#3a2;"></i></p>
+          <span *ngIf="load" class="spinner-grow spinner-grow-sm text-success text-center loading" role="status" aria-hidden="true"></span>'
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <input type="submit" [disabled]="!this.createFolderForm.valid" class="btn btn-primary" value="Create">
+          <input type="submit" [disabled]="!this.createFolderForm.valid" id="btn-submit-folder"class="btn btn-primary" value="Create">
         </div>
 
 
@@ -541,6 +551,5 @@ aria-hidden="true">
     </div>
   </div>
 </div>
-
 
 </html>

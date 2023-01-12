@@ -9,11 +9,12 @@
 
     <div class="login-page">
 
-        <div class="form" id="scroll">
+        <div class="form" >
             <form class="register-form" [formGroup]="registerForm" (ngSubmit)="submitRegister()">
-                <p class="message" id="m1">Already registered? <a id="a1" style="cursor:pointer;">Sign In</a></p>
+                <p class="message" id="m1">Already registered? <a id="a1" style="cursor:pointer;">Log In</a></p>
 
                 <input type="text" placeholder="Name" formControlName="name" id="input-name"/>
+                
 
                 <div class="alert" *ngIf="registerForm.get('name')?.errors?.['required']">
                     *Name field is required.
@@ -21,6 +22,10 @@
 
                 <div class="alert" *ngIf="registerForm.get('name')?.errors?.['maxlength']">
                     *Name field allows up to 25 chars
+                </div>
+
+                <div class="alert" *ngIf="!validWhiteSpace">
+                    *Name input only admit one space.
                 </div>
 
                 <div class="alert" *ngIf="registerForm.get('name')?.errors?.['minlength']">
@@ -34,7 +39,7 @@
                 <input type="text" placeholder="Surname" formControlName="surname" id="input-surname"/>
 
                 <div class="alert" *ngIf="registerForm.get('surname')?.errors?.['required']">
-                    *Name field is required.
+                    *Surname field is required.
                 </div>
 
                 <div class="alert" *ngIf="registerForm.get('surname')?.errors?.['maxlength']">
@@ -42,11 +47,11 @@
                 </div>
 
                 <div class="alert" *ngIf="registerForm.get('surname')?.errors?.['minlength']">
-                    *Name field must have at least 3 chars.
+                    *Surame field must have at least 3 chars.
                 </div>
 
                 <div class="alert" *ngIf="registerForm.get('surname')?.errors?.['pattern']">
-                    *Name field allows only letters.
+                    *Surame field allows only letters.
                 </div>
 
                 <input type="date" placeholder="" formControlName="dateOfBirth" id="date_of_birth"
@@ -59,9 +64,8 @@
                 <div class="alert" *ngIf="registerForm.get('dateOfBirth')?.errors?.['required']">
                     *Date of birth is required.
                 </div>
-
                 <select name="" id="select_province" formControlName="province"
-                    (change)="getNameOfProvince($any($event.target).value)" id="input-province">
+                    (change)="getNameOfProvince($any($event.target).value)" >
 
                     <option value="-" selected="true">PROVINCE</option>
                     <option *ngFor="let province of provinces" value="{{province.nombre}}">{{province.nombre}}</option>
@@ -77,7 +81,7 @@
                 </div>
 
                 <select name="" id="select_cities" hidden="true" formControlName="city"
-                    (change)="getCity($any($event.target).value)" id="input-city">
+                    (change)="getCity($any($event.target).value)">
 
                     <option value="-" selected="true">CITY</option>
                     <option *ngFor="let city of cities" value="{{city.nombre}}">{{city.nombre}}</option>
@@ -120,7 +124,13 @@
                     *Username field allows up to 16 chars
                 </div>
 
-                <input type="password" placeholder="Password" formControlName="password" id="input-password"/>
+
+
+                <div class="input-group flex-nowrap">
+                    <input type="password" placeholder="Password" formControlName="password" id="input-password"  style="display:inline-block;" aria-describedby="addon-wrapping" placeholder="Password" />
+                <span class="input-group-text active" style="height:51px;cursor:pointer;border-radius:0;" id="seePassword2"><i class="fa fa-solid fa-eye"></i></span>
+            </div>
+
 
                 <div class="alert" id="alert-city" *ngIf="registerForm.get('password')?.errors?.['required']">
                     *Password is required.
@@ -151,8 +161,7 @@
 
             <form class="login-form" [formGroup]="loginForm" (ngSubmit)="submitLogin()">
 
-                <input type="text" formControlName="username" placeholder="Username" />
-
+                <input type="text" formControlName="username" placeholder="Username" style="outline:none;border:none;" />
                 <div class="alert" *ngIf="loginForm.get('username')?.errors?.['required']">
                     *Username is required
                 </div>
@@ -169,8 +178,12 @@
                     *Username is too large
                 </div>
 
-                <input type="password" formControlName="password" placeholder="Password" />
+                <div class="input-group flex-nowrap">
+                    <input id="input-password2" type="password" style="display:inline-block;outline:none;border:none;" formControlName="password" aria-describedby="addon-wrapping" placeholder="Password" />
+                <span class="input-group-text active" style="height:51px;cursor:pointer;border-radius:0;" id="seePassword"><i class="fa fa-solid fa-eye"></i></span>
+            </div>
 
+               
                 <div class="alert" *ngIf="loginForm.get('password')?.errors?.['required']">
                     *Password is required
                 </div>

@@ -102,7 +102,6 @@ export class LoginComponent implements OnInit {
   registerForm: FormGroup;
   $: any;
   provinces: any[] = [];
-  municipios: any[] = [];
   cities: any[] = [];
   selectedCity: any;
   selectedProvince: any;
@@ -111,6 +110,7 @@ export class LoginComponent implements OnInit {
   ageValid: boolean;
   isLoad: boolean = false;
   isLoadReg: boolean = false;
+  validWhiteSpace:boolean = true;
   constructor(private titulo:Title,private route: Router, private formBuilder: FormBuilder, private authService: AuthServiceService, private httpClient: HttpClient, private modalService: NgbModal) {
 
     titulo.setTitle("Login");
@@ -125,8 +125,8 @@ export class LoginComponent implements OnInit {
 
     this.registerForm = this.formBuilder.group({
 
-      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(3), Validators.pattern('^[a-zA-Z]*$')]],
-      surname: ['', [Validators.required, Validators.maxLength(35), Validators.minLength(3), Validators.pattern('^[a-zA-Z]*$')]],
+      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿñÑ]+( [a-zA-ZÀ-ÿñÑ]+)*$')]],
+      surname: ['', [Validators.required, Validators.maxLength(35), Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿñÑ]+( [a-zA-ZÀ-ÿñÑ]+)*$')]],
       dateOfBirth: ['', [Validators.required]],
       province: ['', [Validators.required]],
       city: ['', [Validators.required]],
@@ -146,7 +146,7 @@ export class LoginComponent implements OnInit {
 
     $('.message #a2').click(function () {
       $('form').animate({ height: "toggle", opacity: "toggle" }, "slow");
-      $('.form').css('margin', '-50px auto');
+      $('.form').css('margin', '0px auto');
       $('#m1').css('margin-top', '0px');
       $('#m1').css('margin-bottom', '0px')
 
@@ -158,6 +158,8 @@ export class LoginComponent implements OnInit {
     });
     this.getProvinces();
 
+    $('#select_cities').prop('hidden', true)
+    $('#alert-city').prop('hidden', true)
 
     $('#input-name').focus(() => {
       $('#input-name').css('border', 'none').css('outline', 'none')
@@ -171,12 +173,12 @@ export class LoginComponent implements OnInit {
       $('#date_of_birth').css('border', 'none').css('outline', 'none')
     })
 
-    $('#input-province').focus(() => {
-      $('#input-province').css('border', 'none').css('outline', 'none')
+    $('#select_province').focus(() => {
+      $('#select_province').css('border', 'none').css('outline', 'none')
     })
 
-    $('#input-city').focus(() => {
-      $('#input-city').css('border', 'none').css('outline', 'none')
+    $('#select_cities').focus(() => {
+      $('#select_cities').css('border', 'none').css('outline', 'none')
     })
     $('#input-mail').focus(() => {
       $('#input-mail').css('border', 'none').css('outline', 'none')
@@ -188,6 +190,47 @@ export class LoginComponent implements OnInit {
 
     $('#input-password').focus(() => {
       $('#input-password').css('border', 'none').css('outline', 'none')
+    })
+
+    $('#input-name').focusout( () =>{
+      let k = $('#input-name').val()?.toString();
+      k?.trim();
+      let arr = k?.split(' ');
+      console.log(arr)
+      if((arr?.length || '') > 2){
+        this.validWhiteSpace = false;
+      }else{
+        this.validWhiteSpace = true;
+      }
+    })
+
+    $('#seePassword').click( () =>{
+      let seePw = $('#seePassword');
+      let seePwChild = $('#seePassword').children('i');
+      if(seePw.hasClass('active')){
+        seePw.removeClass('active')
+        seePwChild.removeClass('fa fa-solid fa-eye').addClass('fa fa-solid fa-eye-slash');
+        $('#input-password2').attr('type','text');
+      }else{
+      seePwChild.removeClass('fa fa-solid fa-eye-slash').addClass('fa fa-solid fa-eye');
+      $('#input-password2').attr('type','password');
+      seePw.addClass('active');
+      }
+    })
+
+
+    $('#seePassword2').click( () =>{
+      let seePw = $('#seePassword2');
+      let seePwChild = $('#seePassword2').children('i');
+      if(seePw.hasClass('active')){
+        seePw.removeClass('active')
+        seePwChild.removeClass('fa fa-solid fa-eye').addClass('fa fa-solid fa-eye-slash');
+        $('#input-password').attr('type','text');
+      }else{
+      seePwChild.removeClass('fa fa-solid fa-eye-slash').addClass('fa fa-solid fa-eye');
+      $('#input-password').attr('type','password');
+      seePw.addClass('active');
+      }
     })
   }
 
@@ -202,45 +245,45 @@ export class LoginComponent implements OnInit {
       this.registerForm.get('name')?.errors?.['minlength'] || this.registerForm.get('name')?.errors?.['pattern']) {
 
       this.modalService.open(NgbdModalContent, { centered: true }).componentInstance.error = "Form have some field invalid."
-      $('#input-name').css('border', '1.5px solid #e32');
+      $('#input-name').css('border', '2px solid #f00');
 
     } else if (this.registerForm.get('surname')?.errors?.['required'] || this.registerForm.get('surname')?.errors?.['maxlength'] ||
       this.registerForm.get('surname')?.errors?.['minlength'] || this.registerForm.get('surname')?.errors?.['pattern']) {
       this.modalService.open(NgbdModalContent, { centered: true }).componentInstance.error = "Form have some field invalid."
 
-      $('#input-surname').css('border', '1.5px solid #e32');
+      $('#input-surname').css('border', '2px solid #f00');
 
     } else if (this.registerForm.get('date_of_birth')?.errors?.['required'] || !this.ageValid) {
       this.modalService.open(NgbdModalContent, { centered: true }).componentInstance.error = "Form have some field invalid."
 
-      $('#date_of_birth').css('border', '1.5px solid #e32');
+      $('#date_of_birth').css('border', '2px solid #f00');
 
     } else if (this.registerForm.get('province')?.errors?.['required'] || this.selectedProvince == '-') {
       this.modalService.open(NgbdModalContent, { centered: true }).componentInstance.error = "Form have some field invalid."
 
-      $('#input-province').css('border', '1.5px solid #e32');
+      $('#select_province').css('border', '2px solid #f00');
 
     } else if (this.registerForm.get('city')?.errors?.['required'] || this.selectedCity == '-') {
       this.modalService.open(NgbdModalContent, { centered: true }).componentInstance.error = "Form have some field invalid."
 
-      $('#input-city').css('border', '1.5px solid #e32');
+      $('#select_cities').css('border', '2px solid #f00');
 
     } else if (this.registerForm.get('email')?.errors?.['required'] || this.registerForm.get('email')?.errors?.['mail']) {
       this.modalService.open(NgbdModalContent, { centered: true }).componentInstance.error = "Form have some field invalid."
 
-      $('#input-mail').css('border', '1.5px solid #e32');
+      $('#input-mail').css('border', '2px solid #f00');
 
     } else if (this.registerForm.get('username')?.errors?.['required'] || this.registerForm.get('username')?.errors?.['maxlength'] ||
       this.registerForm.get('username')?.errors?.['minlength'] || this.registerForm.get('username')?.errors?.['pattern']) {
       this.modalService.open(NgbdModalContent, { centered: true }).componentInstance.error = "Form have some field invalid."
 
-      $('#input-username').css('border', '1.5px solid #e32');
+      $('#input-username').css('border', '2px solid #f00');
 
     } else if (this.registerForm.get('password')?.errors?.['required'] || this.registerForm.get('password')?.errors?.['maxlength'] ||
       this.registerForm.get('password')?.errors?.['minlength'] || this.registerForm.get('password')?.errors?.['pattern']) {
       this.modalService.open(NgbdModalContent, { centered: true }).componentInstance.error = "Form have some field invalid."
 
-      $('#input-password').css('border', '1.5px solid #e32');
+      $('#input-password').css('border', '2px solid #f00');
 
     }
 
@@ -284,13 +327,13 @@ export class LoginComponent implements OnInit {
 
     const user: User = {
 
-      name: this.registerForm.get('name')?.value,
-      surname: this.registerForm.get('surname')?.value,
-      username: this.registerForm.get('username')?.value,
+      name: (this.registerForm.get('name')?.value).trim(),
+      surname: (this.registerForm.get('surname')?.value).trim(),
+      username: (this.registerForm.get('username')?.value).trim(),
       date_of_birth: this.registerForm.get('dateOfBirth')?.value,
       province: this.registerForm.get('province')?.value,
       city: this.registerForm.get('city')?.value,
-      mail: this.registerForm.get('email')?.value,
+      mail: (this.registerForm.get('email')?.value).trim(),
       password: this.registerForm.get('password')?.value
 
     }
@@ -347,7 +390,16 @@ export class LoginComponent implements OnInit {
 
     this.httpClient.get("https://apis.datos.gob.ar/georef/api/provincias").subscribe(
       (data: any) => {
-        this.provinces = data.provincias
+        this.provinces = data.provincias.sort(function (a:any, b:any) {
+          if (a.nombre.toLowerCase() > b.nombre.toLowerCase()) {
+              return 1;
+          }
+          if (a.nombre.toLowerCase() < b.nombre.toLowerCase()) {
+              return -1;
+          }
+          // a must be equal to b
+          return 0;
+      });
       }
     )
 
@@ -358,6 +410,7 @@ export class LoginComponent implements OnInit {
     $('#select_cities').prop('hidden', true)
     $('#alert-city').prop('hidden', true)
     if (this.selectedProvince != '-') {
+      
       this.getCities();
     }
   }
@@ -369,9 +422,22 @@ export class LoginComponent implements OnInit {
   getCities() {
     this.httpClient.get("https://apis.datos.gob.ar/georef/api/localidades?provincia=" + this.selectedProvince + "&max=950", { responseType: 'json' }).subscribe(
       (data: any) => {
-        $('#select_cities').prop('hidden', false);
+        //$('#select_cities').prop('hidden', false);
+        $('#select_cities').prop('hidden', false)
         $('#alert-city').prop('hidden', false)
-        this.cities = data.localidades
+
+        this.cities = data.localidades.sort(function (a:any, b:any) {
+          if (a.nombre.toLowerCase() > b.nombre.toLowerCase()) {
+              return 1;
+          }
+          if (a.nombre.toLowerCase() < b.nombre.toLowerCase()) {
+              return -1;
+          }
+          // a must be equal to b
+          return 0;
+      });
+        
+
       }
     )
   }

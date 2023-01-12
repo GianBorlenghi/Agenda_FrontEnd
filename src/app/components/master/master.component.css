@@ -13,6 +13,7 @@ body{
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a9db80', endColorstr='#96c56f', GradientType=1);
   /* IE6-9 fallback on horizontal gradient */
+
   overflow: hidden;
   height: 100vh;
 }
@@ -21,6 +22,16 @@ body{
   overflow-y:hidden;
   overflow-x:hidden;
   
+}
+
+#paragraph{
+  
+  font-family: "Marcellus SC", serif;
+  text-transform: capitalize;
+  text-align: center;
+  font-size: 25px;
+  color: rgb(218, 250, 204);
+  text-shadow: rgb(7, 49, 13) 2px 2px 2px;
 }
 .bt{
   -webkit-box-sizing: content-box;
@@ -33,7 +44,9 @@ body{
   text-align: center;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
-  background-color: #aaa;
+  /*background-color: #aaa;*/
+  background-color:#3a3;
+  opacity: 70%;
   -webkit-box-shadow: 2px 2px 3px 1px rgba(0,0,0,1) ;
   box-shadow: 2px 2px 5px 1px rgba(0,0,0,1) ;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.2) ;
@@ -43,11 +56,13 @@ body{
   overflow-y:scroll;
 }
 .bt:hover{
-  background-color: #aaa;
+border-bottom:2px solid #fff;
+border-top:2px solid #fff;
+background-color: #bbb;
 }
 
 .bt:active{
-  background-color: rgba(150, 197, 111, 1);
+  background-color: #0f0;
 }
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
@@ -90,5 +105,15 @@ color:#17a;
 }
 
 .folder-container i:hover{
-background-color: #ccc;
-opacity: 80%;} 
+background-color: rgb(140, 185, 127);
+opacity: 80%;
+border-radius:10px 10px 10px 0 ;} 
+
+@media screen and (max-width:800px) {
+
+  #paragraph{
+    font-size:15px;
+  }
+
+  
+}
